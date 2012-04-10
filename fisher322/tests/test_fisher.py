@@ -50,6 +50,14 @@ def test_corners():
     assert_array_almost_equal(f_cdf(np.inf, 1, 1), 1)
 
 
+def test_int():
+    # Inputs must be ints
+    assert_array_almost_equal(f_sf(0, 1.0, 1.0), 1)
+    assert_raises(ValueError, f_cdf, 0, 1.1, 1)
+    assert_raises(ValueError, f_cdf, 0, 1, 1.1)
+    assert_raises(ValueError, f_cdf, 0, 1.1, 1.1)
+
+
 def test_stored_scipy():
     # Test against stored scipy results
     TEST_DATA = np.load(TEST_DATA_FNAME)

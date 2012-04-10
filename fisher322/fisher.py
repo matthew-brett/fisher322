@@ -101,8 +101,10 @@ def _fisher(m, n, x):
     p : array
         probability of F value less than or equal to `x`
     """
-    m = int(m)
-    n = int(n)
+    mf, nf = m, n
+    m, n = np.round([mf, nf]).astype(int)
+    if (mf, nf) != (m, n):
+        raise ValueError("m, n need to be integers")
     # Negative values -> p == 0
     all_x = np.array(x, dtype=float)
     is_scalar = all_x.ndim == 0
@@ -112,7 +114,10 @@ def _fisher(m, n, x):
         all_x = np.atleast_1d(all_x)
     all_p = np.zeros_like(all_x)
     gt0 = all_x > 0
-    x = all_x[gt0]
+    finites = all_x != np.inf
+    all_p[-finites] = 1
+    valid = gt0 & finites
+    x = all_x[valid]
     a = 2*(m//2)-m+2;
     b = 2*(n//2)-n+2;
     w = (x*m)/n;
@@ -149,7 +154,7 @@ def _fisher(m, n, x):
         j = i+b;
         d *= (y*j)/(i-2);
         p -= z*d/j;
-    all_p[gt0] = p
+    all_p[valid] = p
     if is_scalar:
         return np.asscalar(all_p)
     return all_p
